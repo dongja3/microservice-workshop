@@ -19,6 +19,7 @@ public class InventoryController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<InventoryResponse> findInventoryBySkuCodes (@RequestParam List<String> skuCodes){
+        System.out.println("check inventory");
         List<Inventory> inventories = inventoryService.findInventoryBySkuCodes(skuCodes);
 
        return inventories.stream().map(inventory -> InventoryBuilder.buildInventoryResponse(inventory)).toList();

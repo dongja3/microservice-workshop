@@ -23,10 +23,10 @@ public class OrderAppServiceImpl  implements OrderAppService {
 
     @Override
     public String placeOder(Order order) {
-
+        System.out.println("place Order");
         List<String> skuCodes = order.getOrderLineItems().stream().map(OrderLineItem::getSkuCode).toList();
         InventoryResponse[] inventoryResponses = webclientBuilder.build().get()
-                .uri("http://localhost:8091/api/inventory",uriBuilder -> uriBuilder.queryParam("skuCodes", skuCodes).build())
+                .uri("http://inventory-service/api/inventory",uriBuilder -> uriBuilder.queryParam("skuCodes", skuCodes).build())
                 .retrieve()
                 .bodyToMono(InventoryResponse[].class)
                 .block();
