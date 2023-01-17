@@ -38,4 +38,11 @@ public class ProductController {
     public void deleteAll(){
         productService.deleteAll();
     }
+
+    @GetMapping
+    @RequestMapping(path="/exist/{skuCode}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean isProductExist(@PathVariable String skuCode){
+        return  productService.findBySkuCode(skuCode).isPresent();
+    }
 }

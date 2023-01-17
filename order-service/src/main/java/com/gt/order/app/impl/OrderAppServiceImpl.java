@@ -25,6 +25,16 @@ public class OrderAppServiceImpl  implements OrderAppService {
     public String placeOder(Order order) {
         System.out.println("place Order");
         List<String> skuCodes = order.getOrderLineItems().stream().map(OrderLineItem::getSkuCode).toList();
+
+        for(String skuCode: skuCodes){
+            boolean isProductExist = webclientBuilder.build().get().uri("http://product-service",
+                    uriBuilder -> uriBuilder.path("/api/product/exist/{skuCode}")
+                                    .build(skuCode)).retrieve().bodyToMono(Boolean.class).block();
+            if(!isProductExist){
+               return "No such product";
+            }
+        }
+
         InventoryResponse[] inventoryResponses = webclientBuilder.build().get()
                 .uri("http://inventory-service/api/inventory",uriBuilder -> uriBuilder.queryParam("skuCodes", skuCodes).build())
                 .retrieve()
@@ -36,7 +46,8 @@ public class OrderAppServiceImpl  implements OrderAppService {
             orderService.placeOder(order);
             return "Order Placed Successfully";
         }else{
-            throw new IllegalArgumentException("Product is not in stock, please try again later");
+            return "Product is not in stock, please try again later";
+//            throw new IllegalArgumentException("Product is not in stock, please try again later");
         }
     }
 }

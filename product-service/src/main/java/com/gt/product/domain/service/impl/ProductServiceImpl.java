@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -26,5 +27,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteAll() {
         productRepo.deleteAll();
+    }
+
+    @Override
+    public Optional<Product> findBySkuCode(String skuCode) {
+      return  productRepo.findByName(skuCode);
     }
 }
