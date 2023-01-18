@@ -13,8 +13,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepo orderRepo;
     @Override
-    public String placeOder(Order order) {
-        orderRepo.save(order);
-        return "Order placed successfully";
+    public Order placeOder(Order order) {
+       return orderRepo.save(order);
     }
 }

@@ -2,9 +2,11 @@ package com.gt.order.app.impl;
 
 import com.gt.order.api.dto.InventoryResponse;
 import com.gt.order.app.OrderAppService;
+import com.gt.order.domain.event.OrderEvent;
 import com.gt.order.domain.model.Order;
 import com.gt.order.domain.model.OrderLineItem;
 import com.gt.order.domain.service.OrderService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,6 +22,9 @@ public class OrderAppServiceImpl  implements OrderAppService {
 
     @Autowired
     private WebClient.Builder webclientBuilder;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public String placeOder(Order order) {
@@ -43,7 +48,8 @@ public class OrderAppServiceImpl  implements OrderAppService {
 
         boolean allProductsInStock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::isInStock);
         if (allProductsInStock) {
-            orderService.placeOder(order);
+            Order order1 = orderService.placeOder(order);
+            rabbitTemplate.convertAndSend("order-queue", OrderEvent.builder().orderNo(order1.getOrderNo()).build());
             return "Order Placed Successfully";
         }else{
             return "Product is not in stock, please try again later";

@@ -25,3 +25,4 @@ hs_err_pid*
 /.idea/*
 product-service/database/*
 
+order-service/target/classes/application.properties
