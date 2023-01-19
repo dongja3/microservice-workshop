@@ -6,6 +6,7 @@ import com.gt.order.domain.event.OrderEvent;
 import com.gt.order.domain.model.Order;
 import com.gt.order.domain.model.OrderLineItem;
 import com.gt.order.domain.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderAppServiceImpl  implements OrderAppService {
 
     @Autowired
@@ -28,7 +30,7 @@ public class OrderAppServiceImpl  implements OrderAppService {
 
     @Override
     public String placeOder(Order order) {
-        System.out.println("place Order");
+        log.info("Order placed {}", order.getOrderNo());
         List<String> skuCodes = order.getOrderLineItems().stream().map(OrderLineItem::getSkuCode).toList();
 
         for(String skuCode: skuCodes){
@@ -47,6 +49,7 @@ public class OrderAppServiceImpl  implements OrderAppService {
                 .block();
 
         boolean allProductsInStock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::isInStock);
+
         if (allProductsInStock) {
             Order order1 = orderService.placeOder(order);
             rabbitTemplate.convertAndSend("order-queue", OrderEvent.builder().orderNo(order1.getOrderNo()).build());

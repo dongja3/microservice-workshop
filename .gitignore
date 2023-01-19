@@ -24,5 +24,7 @@
 hs_err_pid*
 /.idea/*
 product-service/database/*
-docker/*
 **/target/*
+/docker/mongodb/database/*
+/docker/prometheus/grafana/*/*
+/docker/prometheus/grafana/grafana.db
