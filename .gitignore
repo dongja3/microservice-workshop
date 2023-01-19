@@ -25,9 +25,4 @@ hs_err_pid*
 /.idea/*
 product-service/database/*
 docker/*
-**/target/classes
-inventory-service/target/*
 **/target/*
-/inventory-service/target/*
-/inventory-service/target
-/inventory-service/target/classes/application.properties
