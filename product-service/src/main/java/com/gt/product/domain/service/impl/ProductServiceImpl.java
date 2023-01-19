@@ -31,6 +31,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> findBySkuCode(String skuCode) {
-      return  productRepo.findByName(skuCode);
+      return  productRepo.findBySkuCode(skuCode);
     }
 }
