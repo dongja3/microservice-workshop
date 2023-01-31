@@ -6,6 +6,7 @@ import com.gt.order.domain.event.OrderEvent;
 import com.gt.order.domain.model.Order;
 import com.gt.order.domain.model.OrderLineItem;
 import com.gt.order.domain.service.OrderService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class OrderAppServiceImpl  implements OrderAppService {
     RabbitTemplate rabbitTemplate;
 
     @Override
+    @CircuitBreaker(name = "placeOrder", fallbackMethod = "placeOrderFallback")
     public String placeOder(Order order) {
         log.info("Order placed {}", order.getOrderNo());
         List<String> skuCodes = order.getOrderLineItems().stream().map(OrderLineItem::getSkuCode).toList();
@@ -58,5 +60,9 @@ public class OrderAppServiceImpl  implements OrderAppService {
             return "Product is not in stock, please try again later";
 //            throw new IllegalArgumentException("Product is not in stock, please try again later");
         }
+    }
+
+    public String placeOrderFallback(Order order, RuntimeException runtimeException){
+        return "Oops! Something went wrong, please order after some time! " + System.lineSeparator() + runtimeException.getMessage();
     }
 }
